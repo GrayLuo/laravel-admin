@@ -577,8 +577,10 @@ class Form implements Renderable
             $this->updateRelation($this->relations);
         });
 
-        if (($result = $this->callSaved()) instanceof Response) {
-            return $result;
+        if(!array_key_exists(Field::FILE_DELETE_FLAG, $data)) {
+            if (($result = $this->callSaved()) instanceof Response) {
+                return $result;
+            }
         }
 
         if ($response = $this->ajaxResponse(trans('admin.update_succeeded'))) {
