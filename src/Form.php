@@ -420,7 +420,11 @@ class Form implements Renderable
                 return $response;
             }
         }
-
+        if(!array_key_exists(Field::FILE_DELETE_FLAG, $data)) {
+            if (($response = $this->callSaved()) instanceof Response) {
+                return $response;
+            }
+        }
         $this->relations = $this->getRelationInputs($this->inputs);
 
         $this->updates = array_except($this->inputs, array_keys($this->relations));
