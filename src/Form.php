@@ -415,9 +415,10 @@ class Form implements Renderable
         }
 
         $this->inputs = array_merge($this->removeIgnoredFields($data), $this->inputs);
-
-        if (($response = $this->callSaving()) instanceof Response) {
-            return $response;
+        if(!array_key_exists(Field::FILE_DELETE_FLAG, $data)) {
+            if (($response = $this->callSaving()) instanceof Response) {
+                return $response;
+            }
         }
 
         $this->relations = $this->getRelationInputs($this->inputs);
