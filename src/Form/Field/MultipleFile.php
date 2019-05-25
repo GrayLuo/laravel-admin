@@ -16,7 +16,7 @@ class MultipleFile extends Field
      * @var array
      */
     protected static $css = [
-        '/vendor/laravel-admin/bootstrap-fileinput/css/fileinput.min.css?v=4.5.2',
+        '/vendor/laravel-admin/bootstrap-fileinput/css/fileinput.min.css?v=4.3.7',
     ];
 
     /**
@@ -25,8 +25,8 @@ class MultipleFile extends Field
      * @var array
      */
     protected static $js = [
-        '/vendor/laravel-admin/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js',
-        '/vendor/laravel-admin/bootstrap-fileinput/js/fileinput.min.js?v=4.5.2',
+        '/vendor/laravel-admin/bootstrap-fileinput/js/plugins/canvas-to-blob.min.js?v=4.3.7',
+        '/vendor/laravel-admin/bootstrap-fileinput/js/fileinput.min.js?v=4.3.7',
     ];
 
     /**
@@ -63,6 +63,14 @@ class MultipleFile extends Field
 
         if ($this->validator) {
             return $this->validator->call($this, $input);
+        }
+
+        /*
+         * If has original value, means the form is in edit mode,
+         * then remove required rule from rules.
+         */
+        if ($this->original()) {
+            $this->removeRule('required');
         }
 
         $attributes = [];
@@ -189,7 +197,7 @@ class MultipleFile extends Field
         foreach ($files as $index => $file) {
             $config[] = [
                 'caption' => basename($file),
-                'key'     => $index,
+                'key'     => $file,
             ];
         }
 
@@ -230,13 +238,11 @@ EOT;
     {
         $files = $this->original ?: [];
 
-        $file = array_get($files, $key);
-
-        if ($this->storage->exists($file)) {
-            $this->storage->delete($file);
+        if ($this->storage->exists($key)) {
+            $this->storage->delete($key);
         }
 
-        unset($files[$key]);
+        $files = array_diff($files, [$key]);
 
         return array_values($files);
     }
